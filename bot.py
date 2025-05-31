@@ -3,8 +3,9 @@ from discord.ext import commands
 from config import DISCORD_TOKEN
 import os
 import sqlite3
+from datetime import datetime, timedelta
 
-# Use full intents so we capture everything, especially for presence updates
+# Use full intents so we capture everything
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -21,49 +22,57 @@ async def on_ready():
 
 @bot.event
 async def on_presence_update(before, after):
-    def get_games_being_played(activities):
-        games = set()
-        if activities:
-            for activity in activities:
-                if activity and activity.type == discord.ActivityType.playing and activity.name:
-                    games.add(activity.name)
-        return games
+    print(f"[DEBUG] Presence update: {after.display_name}")
+    print(f"[DEBUG] Before: {before.activities}")
+    print(f"[DEBUG] After: {after.activities}")
 
-    current_games = get_games_being_played(after.activities)
-    previous_games = get_games_being_played(before.activities)
-
-    for game_name in current_games:
-        if game_name not in previous_games:
-            print(f"[INFO] {after.display_name} started playing {game_name}. Triggering alerts.")
+    for activity in after.activities:
+        if activity.type == discord.ActivityType.playing:
+            game_name = activity.name
             target_user_id = after.id
-            
-            users_to_notify_tuples = []
-            try:
-                conn = sqlite3.connect('database/atom.db')
-                c = conn.cursor()
+
+            conn = sqlite3.connect('database/atom.db')
+            c = conn.cursor()
+
+            # Check if any users want to be alerted about this person playing this game
+            c.execute('''
+                SELECT user_id FROM alerts WHERE target_user_id = ? AND game_name = ?
+            ''', (target_user_id, game_name))
+            users_to_notify = c.fetchall()
+
+            # Check and update last_alerts_sent to avoid duplicates
+            for user_id in users_to_notify:
+                uid = user_id[0]
+
                 c.execute('''
-                    SELECT user_id FROM alerts WHERE target_user_id = ? AND game_name = ?
-                ''', (target_user_id, game_name))
-                users_to_notify_tuples = c.fetchall()
-                conn.close()
-            except sqlite3.Error as e:
-                print(f"[ERROR] Database error: {e}")
-                return 
+                    SELECT timestamp FROM last_alerts_sent
+                    WHERE user_id = ? AND target_user_id = ? AND game_name = ?
+                ''', (uid, target_user_id, game_name))
+                result = c.fetchone()
 
-            if users_to_notify_tuples:
-                print(f"[INFO] Found {len(users_to_notify_tuples)} users to notify for {after.display_name} playing {game_name}.")
-                for user_id_tuple in users_to_notify_tuples:
-                    user_to_alert = await bot.fetch_user(user_id_tuple[0]) 
-                    if user_to_alert:
-                        try:
-                            await user_to_alert.send(f"🎮 {after.display_name} just started playing {game_name}!")
-                        except discord.Forbidden:
-                            print(f"❌ Could not send DM to {user_to_alert.name} (ID: {user_id_tuple[0]}). DMs might be disabled or bot blocked.")
-                        except discord.HTTPException as e:
-                            print(f"⚠️ Failed to send DM to {user_to_alert.name} (ID: {user_id_tuple[0]}): {e}")
-                    else:
-                        print(f"⚠️ Could not fetch user with ID {user_id_tuple[0]}. Maybe they left a shared server?")
+                now = datetime.utcnow()
+                should_send = True
 
+                if result:
+                    last_sent_time = datetime.strptime(result[0], '%Y-%m-%d %H:%M:%S')
+                    # Don't resend if sent in last 6 hours
+                    if now - last_sent_time < timedelta(hours=6):
+                        should_send = False
+
+                if should_send:
+                    user = await bot.fetch_user(uid)
+                    await user.send(f"🎮 {after.name} just started playing {game_name}!")
+
+                    # Insert or update timestamp
+                    c.execute('''
+                        INSERT INTO last_alerts_sent (user_id, target_user_id, game_name, timestamp)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(user_id, target_user_id, game_name)
+                        DO UPDATE SET timestamp=excluded.timestamp
+                    ''', (uid, target_user_id, game_name, now.strftime('%Y-%m-%d %H:%M:%S')))
+
+            conn.commit()
+            conn.close()
 
 print("🔧 Starting bot setup...")
 bot.run(DISCORD_TOKEN)
