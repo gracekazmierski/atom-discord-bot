@@ -1,0 +1,8 @@
+discord.py
+aiohttp
+sqlite-utils
+python-dotenv
+black              
+isort              
+pytest      
+ollama      
