@@ -1,6 +1,7 @@
 import sqlite3
 
 def add_game_alert(user_id, target_user_id, game_name):
+    print(f"[DEBUG] DB function called: add_game_alert({user_id}, {target_user_id}, {game_name})")
     conn = sqlite3.connect('database/atom.db')
     c = conn.cursor()
 
