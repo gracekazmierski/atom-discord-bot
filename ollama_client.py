@@ -25,7 +25,7 @@ def preprocess_prompt(prompt):
         prompt = f"The current time is {now}. {prompt}"
     return prompt
 
-
+# Conversation history for contextual replies
 conversation_history = [
     {
         "role": "system",
@@ -33,7 +33,7 @@ conversation_history = [
             "You are Atom, a sarcastic but helpful AI assistant with dry humor. "
             "You're clever, respectful, and always get to the point. Never ramble. "
             "Use short, punchy replies. You're fine dropping a snarky comment, "
-            "but you're never mean. Keep it fun, keep it sharp. Do 10% sarcasm, 90% helpfulness. "
+            "but you're never mean. Keep it fun, keep it sharp. Do 10% sarcasm, 90% helpfulness."
         )
     }
 ]
@@ -45,22 +45,17 @@ def query_ollama(prompt):
         "content": prompt
     })
 
-    # Query Ollama with full history
+    # Send full conversation to Ollama through ngrok tunnel
     response = ollama.chat(
-    model="llama3",
-    base_url="https://2d42-205-185-98-8.ngrok-free.app",
-    messages=[
-        {"role": "system", "content": "..."},
-        {"role": "user", "content": prompt}
-    ],
-    options={
-        "num_predict": 600,
-        "temperature": 0.8
-    }
-)
+        model="llama3",
+        base_url="https://2d42-205-185-98-8.ngrok-free.app",  # <- your ngrok base URL
+        messages=conversation_history,
+        options={
+            "num_predict": 600,
+            "temperature": 0.8
+        }
+    )
 
-
-    # Append Atom's reply to the history
     atom_reply = response["message"]["content"]
     conversation_history.append({
         "role": "assistant",
