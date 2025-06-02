@@ -47,13 +47,18 @@ def query_ollama(prompt):
 
     # Query Ollama with full history
     response = ollama.chat(
-        model="llama3",
-        messages=conversation_history,
-        options={
-            "num_predict": 400,
-            "temperature": 0.8
-        }
-    )
+    model="llama3",
+    base_url="https://2d42-205-185-98-8.ngrok-free.app",
+    messages=[
+        {"role": "system", "content": "..."},
+        {"role": "user", "content": prompt}
+    ],
+    options={
+        "num_predict": 600,
+        "temperature": 0.8
+    }
+)
+
 
     # Append Atom's reply to the history
     atom_reply = response["message"]["content"]
