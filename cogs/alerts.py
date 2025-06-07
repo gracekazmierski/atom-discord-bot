@@ -52,11 +52,14 @@ class Alerts(commands.Cog):
                     alert_lines.append(f"🔔 Notify me when {user.name} plays {game}")
                 alert_str = "\n".join(alert_lines)
 
-                channel = discord.utils.get(ctx.guild.text_channels, name="alerts")
-                if channel:
-                    await channel.send(alert_str)
-                else:
-                    await ctx.send(alert_str)
+                if ctx.guild:
+                    channel = discord.utils.get(ctx.guild.text_channels, name="alerts")
+                    if channel:
+                        await channel.send(alert_str)
+                        return
+
+                # fallback to wherever the command was issued (DM or regular channel)
+                await ctx.send(alert_str)
             else:
                 await ctx.send("You don’t have any game alerts set.")
         else:

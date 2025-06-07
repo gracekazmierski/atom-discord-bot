@@ -6,7 +6,7 @@ import sqlite3
 from datetime import datetime
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", help_command=None, intents=intents)
 print("bot.py is running...")
 
 @bot.event

@@ -11,9 +11,16 @@ CREATE TABLE IF NOT EXISTS last_alerts_sent (
     game_name TEXT,
     timestamp DATETIME
 );
-CREATE TABLE reminders (
+CREATE TABLE IF NOT EXISTS reminders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
     reminder TEXT NOT NULL,
     remind_at DATETIME NOT NULL
+);
+CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    description TEXT NOT NULL,
+    is_done INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
