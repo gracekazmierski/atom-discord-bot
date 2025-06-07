@@ -7,3 +7,4 @@ isort
 pytest      
 ollama      
 requests
+dateparser

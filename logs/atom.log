@@ -205,3 +205,49 @@ INFO:httpx:HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
 INFO:httpx:HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
 INFO:httpx:HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
 INFO:httpx:HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+ERROR:discord.ext.tasks:Unhandled exception in internal background task 'check_reminders'.
+Traceback (most recent call last):
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\tasks\__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "C:\Users\grace\OneDrive\atom-bot\cogs\reminders.py", line 45, in check_reminders
+    c.execute("SELECT id, user_id, reminder FROM reminders WHERE remind_at <= ?", (datetime.now(),))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: reminders
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='discord-ext-tasks: Reminders.check_reminders' coro=<Loop._loop() done, defined at C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\tasks\__init__.py:207> exception=OperationalError('no such table: reminders')>
+Traceback (most recent call last):
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\tasks\__init__.py", line 271, in _loop
+    raise exc
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\tasks\__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "C:\Users\grace\OneDrive\atom-bot\cogs\reminders.py", line 45, in check_reminders
+    c.execute("SELECT id, user_id, reminder FROM reminders WHERE remind_at <= ?", (datetime.now(),))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: reminders
+ERROR:discord.ext.commands.bot:Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "remind" is not found
+INFO:httpx:HTTP Request: POST https://8f2c-205-185-98-8.ngrok-free.app/api/chat "HTTP/1.1 200 OK"
+ERROR:discord.client:Ignoring exception in on_ready
+Traceback (most recent call last):
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\commands\bot.py", line 963, in _load_from_module_spec
+    await setup(self)
+  File "C:\Users\grace\OneDrive\atom-bot\cogs\reminders.py", line 66, in setup
+    await bot.add_cog(Reminders(bot))
+                      ~~~~~~~~~^^^^^
+  File "C:\Users\grace\OneDrive\atom-bot\cogs\reminders.py", line 11, in __init__
+    self.check_reminders.start()
+    ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Reminders' object has no attribute 'check_reminders'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\grace\OneDrive\atom-bot\bot.py", line 18, in on_ready
+    await bot.load_extension(f"cogs.{filename[:-3]}")
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\commands\bot.py", line 1029, in load_extension
+    await self._load_from_module_spec(spec, name)
+  File "C:\Users\grace\OneDrive\atom-bot\venv\Lib\site-packages\discord\ext\commands\bot.py", line 968, in _load_from_module_spec
+    raise errors.ExtensionFailed(key, e) from e
+discord.ext.commands.errors.ExtensionFailed: Extension 'cogs.reminders' raised an error: AttributeError: 'Reminders' object has no attribute 'check_reminders'
