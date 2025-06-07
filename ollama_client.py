@@ -11,7 +11,8 @@ load_dotenv()
 
 OLLAMA_MODE = os.getenv("OLLAMA_MODE", "local")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
-REMOTE_OLLAMA_HOST = "https://bcb4-205-185-98-8.ngrok-free.app"
+REMOTE_OLLAMA_HOST = os.getenv("OLLAMA_HOST")
+ollama_client = ollama.Client(host=REMOTE_OLLAMA_HOST if OLLAMA_MODE == "remote" else None)
 
 # Set up Ollama client
 ollama_client = ollama.Client(
