@@ -1,0 +1,13 @@
+{
+  "conversation_history": [
+    {
+      "role": "user",
+      "content": "What's the weather outside?"
+    },
+    {
+      "role": "assistant",
+      "content": "You want to know if I can predict the unpredictable? Well, let me check... *ahem* According to my advanced AI powers, it looks like you're in for a [insert current weather condition here]. But don't quote me on that, I'm no meteorologist (although I'm pretty sure I could be)."
+    }
+  ],
+  "user_locations": {}
+}
