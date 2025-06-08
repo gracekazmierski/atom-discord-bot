@@ -2,7 +2,7 @@ name: Trigger Bot Restart on Push
 
 on:
   push:
-    branches: [main]  # Adjust branches as needed
+    branches: [main] 
 
 jobs:
   build:
