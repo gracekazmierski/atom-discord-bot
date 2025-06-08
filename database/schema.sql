@@ -24,3 +24,10 @@ CREATE TABLE IF NOT EXISTS tasks (
     is_done INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS calendars (
+    user_id TEXT PRIMARY KEY,
+    ical_url TEXT NOT NULL,
+    timezone TEXT DEFAULT 'America/Denver'
+);
+ALTER TABLE calendars ADD COLUMN last_reminder_sent TEXT;
+

@@ -8,3 +8,6 @@ pytest
 ollama      
 requests
 dateparser
+ics
+pytz
+recurring-ical-events
