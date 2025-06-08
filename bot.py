@@ -11,11 +11,11 @@ print("bot.py is running...")
 
 @bot.event
 async def on_ready():
-    print(f"✅ Atom is online as {bot.user}")
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             print(f"🔄 Loading cog: {filename}")
             await bot.load_extension(f"cogs.{filename[:-3]}")
+    print("Bot Active!")
 
 @bot.event
 async def on_presence_update(before, after):
